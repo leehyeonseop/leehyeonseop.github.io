@@ -5,7 +5,7 @@
     "url": "/posts/%ED%85%8C%EC%8A%A4%ED%8A%B8/",
     "categories": "메인, 서브",
     "tags": "태그1, 태그2, 태그3",
-    "date": "2024-03-29 18:39:00 +0800",
+    "date": "2024-03-29 19:39:00 +0900",
     
 
 
@@ -18,11 +18,28 @@
   },
   
   {
+    "title": "프로토타입과 객체지향 프로그래밍",
+    "url": "/posts/%ED%94%84%EB%A1%9C%ED%86%A0%ED%83%80%EC%9E%85%EA%B3%BC-%EA%B0%9D%EC%B2%B4%EC%A7%80%ED%96%A5-%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D/",
+    "categories": "JavaScript",
+    "tags": "JavaScript",
+    "date": "2024-03-09 12:00:00 +0900",
+    
+
+
+
+
+
+    
+    "snippet": "자바스크립트는 프로토타입 기반 언어로 널리 인식되어 있습니다. 이는 클래스도 실제로 내부적으로 프로토타입 기반 메커니즘을 통해 구현된다는 사실과 맞닿아 있습니다. 이에 대해 자주 듣고는 했으나, 클래스가 프로토타입을 통해 구현되는 구체적인 방법이나 프로토타입의 진정한 의미에 대해서는 깊이 고민해본 적이 없었습니다. 리액트와 같은 프레임워크에 몰두하며 ...",
+    "content": "자바스크립트는 프로토타입 기반 언어로 널리 인식되어 있습니다. 이는 클래스도 실제로 내부적으로 프로토타입 기반 메커니즘을 통해 구현된다는 사실과 맞닿아 있습니다. 이에 대해 자주 듣고는 했으나, 클래스가 프로토타입을 통해 구현되는 구체적인 방법이나 프로토타입의 진정한 의미에 대해서는 깊이 고민해본 적이 없었습니다. 리액트와 같은 프레임워크에 몰두하며 개발하는 과정에서 자바스크립트에 대한 심도 있는 이해를 소홀히 했다는 사실을 깨달았습니다. 이번 기회에 프로토타입에 대한 제대로 된 이해를 목표로 삼고자 합니다.1. 프로토타입이란?function Developer(name) {  this.name = name;}const developer = new Developer();위와 같이 생성자 함수를 지정하고, 인스턴스를 생성합니다.그렇다면 위의 프로토타입 관점에서의 관계는 어떻게 될까?개발자 도구로 확인해본 생성자와 인스턴스console.dir 로 직접 개발자도구로 확인해보면, 생성자 함수 안에는 prototype이라는 이름의 객체가 생성되어있고, 인스턴스 안에는 [[Prototype]] 이라는 객체가 생성되어있는것을 알 수 있습니다. 또한 안의 내용을 살펴보면 생성자 함수를 사용해 생성한 인스턴의 [[Prototype]] 객체는 결국 생성자 함수의 prototype 객체를 가리키고 있는것을 알 수 있습니다.즉Developer.prototype === developer.__proto__;위의 코드가 참(true)으로 성립하게 됩니다.위에서 확인한 내용을 보기 쉽게 그림으로 표현해보겠습니다.이제 생성자 함수에 메서드를 지정해보겠습니다.function Developer(name) {  this.name = name;}Developer.prototype.coding = function () {  console.log(`개발자 ${this.name} 은 코딩을 합니다.`);};const developer = new Developer(\"현섭\");위에서 확인한 결과로는 인스턴스에는 __proto__ 라는 프로퍼티가 생성자 함수의 prototype 프로퍼티를 참조하게 됩니다.따라서 아래와 같이 프로토타입 기반 상속을 실행해보려 합니다.developer.__proto__.coding();생각과 달리 undefined은 코딩을 합니다. 라는 문구가 나오게됩니다. 어떤 함수를 ‘메서드’ 로서 호출할 때는 메서드명 바로 앞의 객체가 this가 되므로, 어찌보면 당연한 결과입니다. this가 developer.__proto__ 를 가리키게 되고, 그 안에는 name이라는 프로퍼티가 존재하지 않으므로 위와 같은 결과가 나오게 됩니다.function Developer(name) {  this.name = name;}Developer.prototype.coding = function () {  console.log(`개발자 ${this.name} 은 코딩을 합니다.`);};const developer = new Developer(\"현섭\");developer.coding();__proto__ 를 제거했더니 이제 원하는 결과가 나왔습니다. 하지만 __proto__ 가 생성자 함수의 prototype 객체를 참조하기 때문에 프로토타입 기반 상속을 가능하게 되었지만, 왜 제거해도 생성자 함수의 메서드를 사용할 수 있는걸까요?그 이유는 바로 __proto__ 가 생략 가능 한 프로퍼티 이기 때문입니다.원래부터 생략 가능하게 정의되어 있으므로, 이 부분은 받아들이고 이해해야합니다.2. 프로토타입 체이닝프로토타입 체이닝이란 객체의 속성을 참조하거나 메서드를 호출할 때, 해당 객체에 해당 속성이나 메서드가 없다면, [[Prototype]] 이 가리키는 곳을 따라 자신의 부모 역할을 하는 프로토타입 객체의 속성이나 메서드를 참조하거나 호출하는 것을 의미합니다.프로토타입 체이닝이란 무엇인지, 배열을 통해 알아보고자 합니다.console.dir(Object);console.dir(Array);일단 Object 생성자를 확인하면 아래 그림과 같이 여러가지 메서드가 prototype 객체 안에 들어가있기도하며, static 메서드로 존재하기도 한다.Object그렇다면, 객체는 어떻게 되어있을까?Array객체 생성자 함수에는 prototype 객체가 존재하고 그 안을 열어보면Array.prototype[[Prototype]] 이 또 존재하는 것을 확인할 수 있다.생성자 함수의 prototype도 결국 객체이기 때문에 그 객체의 인스턴스는 Object의 prototype을 가지고 있게 되는 것이다.따라서, Array의 prototype에는 hasOwnProperty, isPrototypeOf라는 메서드가 없지만,Array의 prototype 안에는 [[Prototype]] 으로 Object의 prototype을 가리키고 있으며, 그 안에 hasOwnProperty, isPrototypeOf 등등 메서드 들이 존재하기 때문에, 프로토타입 체이닝을 통해 해당 메서드들 혹은 프로퍼티에 참조할 수 있게된다.위와 같이 [[Prototype]] 안에 다시 [[Prototype]] 을 찾아가는 과정을 프로토타입 체이닝 이라 하며, 이 프로토타입 체이닝을 통해 각 프로토타입 메서드를 자신의 것처럼 호출할 수 있습니다."
+  },
+  
+  {
     "title": "Customize the Favicon",
     "url": "/posts/customize-the-favicon/",
     "categories": "Blogging, Tutorial",
     "tags": "favicon",
-    "date": "2019-08-11 00:34:00 +0800",
+    "date": "2019-08-11 01:34:00 +0900",
     
 
 
@@ -39,7 +56,7 @@
     "url": "/posts/getting-started/",
     "categories": "Blogging, Tutorial",
     "tags": "getting started",
-    "date": "2019-08-09 20:55:00 +0800",
+    "date": "2019-08-09 21:55:00 +0900",
     
 
 
@@ -56,7 +73,7 @@
     "url": "/posts/write-a-new-post/",
     "categories": "Blogging, Tutorial",
     "tags": "writing",
-    "date": "2019-08-08 14:10:00 +0800",
+    "date": "2019-08-08 15:10:00 +0900",
     
 
 
@@ -73,7 +90,7 @@
     "url": "/posts/text-and-typography/",
     "categories": "Blogging, Demo",
     "tags": "typography",
-    "date": "2019-08-08 11:33:00 +0800",
+    "date": "2019-08-08 12:33:00 +0900",
     
 
 
